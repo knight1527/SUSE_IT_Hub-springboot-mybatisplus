@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>资源编辑</title>
+  <link rel="icon" href="/img/suse.jpg">
+  <link rel="stylesheet" type="text/css" href="../static/css/me.css" th:href="@{/css/me.css}">
+  <link rel="stylesheet" type="text/css" href="../static/lib/Semantic-UI-CSS-master/semantic.min.css" th:href="@{/lib/Semantic-UI-CSS-master/semantic.min.css}">
+  <link rel="stylesheet" href="../static/lib/editormd/css/editormd.css" th:href="@{/lib/editormd/css/editormd.css}">
+  <!--上md编辑器的css-->
+  <style>
+    .icon {
+      vertical-align: -0.15em;
+      fill: currentColor;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+<!--导航-->
+<nav class="ui m-padded-tb-mini m-margin-none segment">
+  <div class="ui container">
+    <div class="ui stackable secondary menu">
+      <img class="ui image item m-padded-none" th:src="@{/img/logo2_0.png}" src="../static/img/logo2_0.png" alt="" width="200px"
+           height="65px">
+      <a href="#" th:href="@{/}" class="m-item item m-mobile-hide"><i class="small home icon m-opacity-mini"></i>首页</a>
+      <a href="" th:href="@{/resource}" class="m-item item m-mobile-hide"><i
+              class="small boxes icon m-opacity-mini"></i>资源</a>
+      <a href="" th:href="@{/community}" class="m-item item m-mobile-hide"><i
+              class="small users icon m-opacity-mini"></i>社区</a>
+      <a href="#" th:href="@{/self}" class="m-item item m-mobile-hide"><i
+              class="small user outline icon m-opacity-mini"></i>个人
+      </a>
+      <div class="right m-item m-mobile-hide menu">
+        <div class="ui dropdown item" th:if="${session.user != null}">
+          <div class="text">
+            <img src="https://unsplash.it/100/100?image=1005"
+                 th:src="@{${session.user.avatar}}"
+                 style="max-width: 28px;max-height: 28px"
+                 class="ui avatar image">
+            <span th:text="${session.user.nickname}"></span>
+          </div>
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <a href="#" th:href="@{/log/logout}" class="item">注销</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a href="#" class="ui menu toggle basic icon button m-location-top-right m-mobile-show">
+    <i class="sidebar icon"></i>
+  </a>
+</nav>
+
+<!--中间内容-->
+<div class="m-container-width-small m-padded-tb-large">
+  <div class="ui container">
+    <form id="blog-form" action="#" th:object="${resource}" th:action="@{/resource/contentInput}" method="post"
+          enctype="multipart/form-data"
+          class="ui form">
+      <input type="hidden" name="type" value="false">
+      <input type="hidden" id="state" name="state">
+      <input type="hidden" name="id" th:value="${resource.id}">
+      <div class="required field">
+        <div class="ui left labeled input">
+          <input type="text" th:value="${resource.title}" name="title" placeholder="标题">
+        </div>
+      </div>
+
+
+      <div class="required field">
+        <div class="ui attached segment">
+          <div class="ui basic grey header" style="opacity: 0.6">添加图标或者使用系统图标</div>
+          <div class="ui two column grid">
+            <div id="preview" class="column m-vertical-center-align">
+              <img src="../static/img/doge2.jpg"
+                   th:src="@{*{avatar}==null?'/img/default_avatar/java.png':*{avatar}}"
+                   width="200px" height="200px"
+                   style="border-radius: 20px">
+            </div>
+            <div class="column">
+              <div class="ui two column grid" style="height: 100%;">
+                <div id="drop_area" class="column  m-vertical-center-align">
+                  <div class="m-padded-normal m-vertical-center-align m-background-color"
+                       style="width:200px;height:200px;">
+                    <input type="file" name="file" id="file" multiple="multiple" onchange="fileUpload()"
+                           style="display:none">
+                    <a href="javascript:void(0)" onclick="select_file()">
+                      <i class="upload grey big icon"></i>
+                    </a>
+                    <span class="m-padded-normal" style="opacity: 0.6">拖拽或点击上传图片</span>
+                  </div>
+                </div>
+                <div class="column m-vertical-center-align">
+                  <div class="ui fluid selection dropdown">
+                    <input id="default-avatar" type="hidden" name="avatar" onchange="avatarPreview()"
+                      th:value="*{avatar}==null?'/img/default_avatar/java.png':*{avatar}">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">使用默认首图</div>
+                    <div class="menu">
+                      <div  class="item" data-value="default" th:attr="data-value=*{avatar}==null?'/img/default_avatar/java.png':*{avatar}"
+                      >none
+                      </div>
+                      <div  class="item" data-value="/img/default_avatar/java.png"
+                      >java
+                      </div>
+                      <div  class="item" data-value="/img/default_avatar/php.png"
+                      >php
+                      </div>
+                      <div  class="item" data-value="/img/default_picture/dream.jpg"
+                      >road
+                      </div>
+                      <div  class="item" data-value="/img/default_avatar/doge2.jpg"
+                      >doge2
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="welcome">
+          <img src="/upload/welcome.png"/>
+          <marquee behavior="left"><strong><span>由于时间原因，作者暂时不提供markdown内容的图床服务，后续作者计划结合gitee
+                        图床完善功能，还望各位海涵！！(注：图片链接里不能有中文哦)</span></strong></marquee>
+        </div>
+      </div>
+
+      <div class="required field">
+        <div id="md-content" style="z-index: 1 !important;">
+                        <textarea placeholder="博客内容" name="content" th:text="*{content}" style="display: none;"
+                                  ></textarea>
+        </div>
+      </div>
+
+      <div class="two fields">
+        <div class="field">
+          <div class="ui left labeled action input">
+            <label class="ui compact blue basic label m-text-thin">资源链接</label>
+            <input type="text" name="link" th:value="*{link}" placeholder="资源链接">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui left labeled action input">
+            <label class="ui compact blue basic label m-text-thin">标签</label>
+            <div class="ui fluid selection multiple search dropdown">
+              <input type="hidden" name="tagIds" th:value="*{tagIds}">
+              <i class="dropdown icon"></i>
+              <div class="default text">标签</div>
+              <div class="menu" style="height: auto;">
+                <div class="m-padded-normal" style="width: 100%;height: auto;">
+                  <div class="ui grid">
+                    <div th:each="type : ${types}" class="m-padded-tag">
+                      <div data-value="java" th:data-value="${type.id}"
+                           th:text="${type.name}"
+                           class="typeObj ui tag label m-margin-tb-tiny" style="cursor: pointer">
+                        JAVA
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ui divider"></div>
+                <div class="m-padded-normal" style="width:100%;height: auto">
+                  <div id="tagTypes" class="ui grid">
+                    <a th:each="tag : ${defaultTagType.tags}" th:text="${tag.tagName}"
+                       class="ui m-a-a-color item label m-margin-normal"
+                       data-value="java" th:data-value="${tag.id}">
+                      Java</a>
+                  </div>
+                  <div th:each="type : ${types}" style="display: none">
+                    <a th:each="tag : ${type.tags}" th:text="${tag.tagName}"
+                       class="ui m-a-a-color item label m-margin-normal"
+                       data-value="java" th:data-value="${tag.id}">
+                      Java</a>
+                  </div>
+                </div>
+                <br>
+                <br>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="required field">
+        <textarea name="description" th:text="*{description}" placeholder="资源描述..." maxlength="200"></textarea>
+      </div>
+
+      <div class="ui error message"></div>
+
+      <div class="ui right aligned container">
+        <button type="button" class="ui button" onclick="window.history.go(-1)">返回</button>
+        <button type="button" id="save-btn" class="ui teal button">保存</button>
+        <button type="button" id="publish-btn" class="ui blue button">发布</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<br>
+<!--foot-->
+<div class="ui section divider"></div>
+<footer th:replace="fragment_::footer" class="ui vertical segment m-padded-tb-large">
+  <div class="ui center aligned container">
+    <div class="ui divided stackable grid">
+      <div class="three wide column center aligned">
+        <div class="ui link list">
+          <div class="item">
+            <img src="../static/img/logo2_0.png"
+                 th:src="@{/img/logo2_0.png}" class="ui rounded image"
+                 style="width:
+                            110px;">
+          </div>
+        </div>
+      </div>
+      <div class="three wide column">
+        <h4 class="ui header m-text-spaced m-text-lined">创意Blog</h4>
+        <div class="ui link list">
+          <a href="#" class="item">orange</a>
+          <a href="#" class="item">orange</a>
+          <a href="#" class="item">orange</a>
+        </div>
+      </div>
+      <div class="six wide column">
+        <h4 class="ui header m-text-spaced m-text-lined">官方</h4>
+        <div class="ui link list">
+          <a href="#" class="item">四川轻化工大学</a>
+          <a href="#" class="item">计算机科学与工程学院</a>
+          <a href="#" class="item">四川轻化工大学电子图书馆</a>
+        </div>
+      </div>
+      <div class="four wide column">
+        <h4 class="ui header m-text-spaced m-text-lined">站在巨人的肩膀上</h4>
+        <p class="m-text-spaced m-text-lined m-text-thin">技术改变世界，代码充实人生</p>
+      </div>
+    </div>
+    <div class="ui section divider"></div>
+    <p class="m-text-spaced m-text-lined m-text-thin m-opacity-tiny">蜀ICP备2021025306号-1</p>
+    <p class="m-text-spaced m-text-lined m-text-thin m-opacity-tiny">CopyRight © 2021-10 DuanQiHang Class 9 of
+      Computer Science and Technology,SUSE</p>
+  </div>
+</footer>
+
+<script src="../static/js/jquery-3.2.1.js" th:src="@{/js/jquery-3.2.1.js}"></script>
+<script src="../static/lib/Semantic-UI-CSS-master/semantic.min.js" th:src="@{/lib/Semantic-UI-CSS-master/semantic.min.js}"></script>
+<script type="text/javascript" src="../static/js/me.js" th:src="@{/js/me.js}"></script>
+<script src="../static/js/fragment.js" th:src="@{/js/fragment.js}"></script>
+<!--md编辑器的js-->
+<script src="../static/lib/editormd/editormd.js" th:src="@{/lib/editormd/editormd.js}"></script>
+<script>
+  /*dropdown默认图片预览*/
+  function avatarPreview() {
+    let avatarSrc = $('#default-avatar').val();
+    if(avatarSrc==null||avatarSrc==="none"){
+
+    }else{
+      let src = "<img src='"+avatarSrc+"'width='200px' height='200px'style='border-radius: 20px'>";
+      $('#preview').html(src);
+    }
+  }
+  /*表单提交*/
+  $('#save-btn').click(function () {
+    $('#state').val('false');
+    $('#blog-form').submit();
+  })
+  $('#publish-btn').click(function () {
+    $('#state').val('true');
+    $('#blog-form').submit();
+  })
+  //!*md编辑器js*!/
+  var contentEditor;
+  $(function() {
+    contentEditor = editormd("md-content", {
+      width   : "100%",
+      height  : 640,
+      syncScrolling : "single",
+      path    : "/lib/editormd/lib/",
+      saveHTMLToTextarea : true, // 保存 HTML 到 Textarea
+      toolbarAutoFixed:true,//工具栏自动固定定位的开启与禁用
+    });
+
+    /*
+    // or
+    testEditor = editormd({
+      id      : "test-editormd",
+      width   : "90%",
+      height  : 640,
+      path    : "../lib/"
+    });
+  */
+  });
+  function select_file(){
+    $("#file").trigger("click");
+  }
+  function fileUpload(){
+    var file =  $('#file')[0].files[0]; //获取文件对象
+    //检测文件是不是图片
+    if(file.type.indexOf('image') === -1){
+      alert("您拖的不是图片！");
+      return false;
+    }
+
+    //拖拉图片到浏览器，可以实现预览功能
+    var img = window.URL.createObjectURL(file);
+    var filename = file.name; //图片名称
+    var filesize = Math.floor((file.size)/1024);
+    if(filesize>5120){
+      alert("上传大小不能超过5MB.");
+      return false;
+    }
+    var str =
+            "<img src='"+img+"'width='200px'height='200px' style='border-radius: 20px'><p>图片名称："+filename+"</p><p>大小："+filesize+"KB</p>";
+    $("#preview").html(str);
+
+  }
+  $(function(){
+    //阻止浏览器默认行。
+    $(document).on({
+      dragleave:function(e){    //拖离
+        e.preventDefault();
+      },
+      drop:function(e){  //拖后放
+        e.preventDefault();
+      },
+      dragenter:function(e){    //拖进
+        e.preventDefault();
+      },
+      dragover:function(e){    //拖来拖去
+        e.preventDefault();
+      }
+    });
+    var box = document.getElementById('drop_area'); //拖拽区域
+    box.addEventListener("drop",function(e){
+      e.preventDefault(); //取消默认浏览器拖拽效果
+      var fileList = e.dataTransfer.files; //获取文件对象
+      //检测是否是拖拽文件到页面的操作
+      if(fileList.length == 0){
+        return false;
+      }
+      //检测文件是不是图片
+      if(fileList[0].type.indexOf('image') === -1){
+        alert("您拖的不是图片！");
+        return false;
+      }
+
+      //拖拉图片到浏览器，可以实现预览功能
+      var img = window.URL.createObjectURL(fileList[0]);
+      var filename = fileList[0].name; //图片名称
+      var filesize = Math.floor((fileList[0].size)/1024);
+      if(filesize>5120){
+        alert("上传大小不能超过5MB.");
+        return false;
+      }
+      var str = "<img src='"+img+"'width='400px'height='240px'><p>图片名称："+filename+"</p><p>大小："+filesize+"KB</p>";
+      $("#preview").html(str);
+    },false);
+  });
+</script>
+
+</body>
+</html>

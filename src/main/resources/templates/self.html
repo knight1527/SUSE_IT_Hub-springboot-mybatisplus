@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+  <link rel="icon" href="/img/suse.jpg">
+  <link rel="stylesheet" type="text/css" href="../static/css/me.css" th:href="@{/css/me.css}">
+  <link rel="stylesheet" type="text/css" href="../static/lib/Semantic-UI-CSS-master/semantic.min.css" th:href="@{/lib/Semantic-UI-CSS-master/semantic.min.css}">
+  <style>
+    .icon {
+      vertical-align: -0.15em;
+      fill: currentColor;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+<!--导航-->
+<nav class="ui m-padded-tb-mini m-margin-none segment">
+  <div class="ui container">
+    <input type="hidden" id="userId" th:value="${user.id}">
+    <div class="ui stackable secondary menu">
+      <img class="ui image item m-padded-none" th:src="@{/img/logo2_0.png}" src="../static/img/logo2_0.png" alt="" width="200px"
+           height="65px">
+      <a href="" th:href="@{/}" class="m-item item m-mobile-hide"><i class="small home icon m-opacity-mini"></i>首页</a>
+      <a href="" th:href="@{/resource}" class="m-item item m-mobile-hide"><i
+              class="small boxes icon m-opacity-mini"></i>资源</a>
+      <a href="" th:href="@{/community}" class="m-item item m-mobile-hide"><i
+              class="small users icon m-opacity-mini"></i>社区</a>
+      <a href="#" class="m-item item m-mobile-hide"><i class="small user outline icon m-opacity-mini"></i>个人</a>
+      <div class="right m-item m-mobile-hide menu">
+        <div class="ui dropdown item" th:if="${session.user != null}">
+          <div class="text">
+            <img src="https://unsplash.it/100/100?image=1005"
+                 th:src="@{${user.avatar}}"
+                 style="max-width: 28px;max-height: 28px"
+                 class="ui avatar image">
+            <span th:text="${user.nickname}"></span>
+          </div>
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <a href="#" th:href="@{/log/logout}" class="item">注销</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a href="#" class="ui menu toggle basic icon button m-location-top-right m-mobile-show">
+    <i class="sidebar icon"></i>
+  </a>
+</nav>
+<!--内容-->
+
+<div class="m-container-width">
+  <div class="ui container m-border-none">
+    <div class="ui stackable grid">
+      <div class="three wide column">
+        <div class="ui vertical following fluid accordion menu settings-bar">
+          <a id="0" class="item active">
+            个人资料
+          </a>
+          <a id="1" class="item">
+            我的收藏
+          </a>
+          <a id="2" class="item">
+            我的内容
+          </a>
+          <a id="3" class="item">
+            我的关注
+          </a>
+          <a class="item">
+            消息中心
+          </a>
+          <a class="item">
+            意见建议
+          </a>
+        </div>
+      </div>
+      <div class="thirteen wide column">
+        <div class="ui container settings">
+            <div class="ui attached segment m-border-none m-image-trans">
+              <div class="ui grid">
+                <div class="three wide column">
+                  <img class="m-image-rotate" src="../static/img/doge2.jpg"
+                       th:src="@{${user.avatar}}"
+                       alt="" width="100px" height="100px"
+                       style="border-radius:
+                  50px">
+                </div>
+                <div class="eleven wide column m-padded-tb-large">
+                  <div class="ui header teal m-padded-tb-mini" th:text="${user.nickname}">nickname</div>
+                  <div class="m-padded-tb-mini">
+                    兴趣标签：
+                    <div class="ui mini label" th:each="tag : ${user.tags}" th:text="${tag.tagName}">java</div>
+                  </div>
+                </div>
+                <div class="two wide column m-vertical-center-align">
+                    <button id="rating" class="ui teal button">
+                      编辑
+                    </button>
+                </div>
+              </div>
+            </div>
+            <!--<div class="ui success message" th:unless="${#strings.isEmpty(message)}">
+              <i class="close icon"></i>
+              <div class="header">提示:</div>
+              <p th:text="${message}">操作成功</p>
+            </div>-->
+            <div class="ui segment m-border-none">
+              <div class="ui vertical following fluid accordion text menu">
+                <div class="item">
+                  <div class="ui two column grid">
+                    <div class="column">
+                      <strong>加入时间：</strong>
+                    </div>
+                    <div class="column" th:text="${#dates.format(user.createTime,'yyyy-MM-dd HH:mm:ss')}">
+                      2021-11-11
+                    </div>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="ui two column grid">
+                    <div class="column">
+                      <strong>专业：</strong>
+                    </div>
+                    <div class="column" th:text="${user.major}">
+                      计算机科学与技术
+                    </div>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="ui two column grid">
+                    <div class="column">
+                      <strong>邮箱：</strong>
+                    </div>
+                    <div class="column" th:text="${user.email}">
+                      12478374@qq.com
+                    </div>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="ui two column grid">
+                    <div class="column">
+                      <strong>个人简介：</strong>
+                    </div>
+                    <div class="column" th:text="${user.description}">
+                      <span>技术改变世界，代码充实人生</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <div class="ui container settings m-none">
+          <div class="ui attached segment m-border-none ">
+            <div class="ui two column grid">
+              <div class="column">
+                <div class="ui header">收藏</div>
+              </div>
+              <div class="column">
+                <div class="ui secondary menu right floated">
+                  <a id="resource_btn" href="javascript:void(0)" class="type_btn item">资源</a>
+                  <a id="blog_btn" href="javascript:void(0)" class="type_btn item">文章</a>
+                </div>
+              </div>
+            </div>
+            <div class="ui divider"></div>
+            <form action="" class="ui form">
+              <div class="field">
+                <input type="text" class="fluid" placeholder="搜索收藏">
+              </div>
+            </form>
+            <div id="resourceCollectMenu">
+              <div class="ui resource vertical following fluid accordion menu">
+                <div th:each="resource : ${userResourcesCollect.list}" class="item">
+                  <div class="ui grid">
+                    <div class="two wide column m-vertical-center-align">
+                      <img src="../static/img/doge2.jpg"
+                           th:src="@{${resource.avatar}}"
+                           alt="" width="40px" height="40px" style="border-radius: 20px">
+                    </div>
+                    <div class="twelve wide column m-padded-tb-normal">
+                      <div class="ui header m-margin-none-all m-padded-tb-mini" th:text="${resource.title}">title</div>
+                      <div class="content m-padded-tb-mini" th:text="${resource.description}">
+                        description
+                      </div>
+                    </div>
+                    <div class="column m-vertical-center-align">
+                      <a href="#" target="_blank"
+                         th:href="@{/resource/{id}(id=${resource.id})}"><i
+                              class="arrow alternate large circle right icon"></i></a>
+                    </div>
+                    <div class="column m-vertical-center-align unfavorite">
+                      <a href="javascript:void(0)"><i class="star m-color-jianghuang large icon"></i></a>
+                    </div>
+                    <input type="hidden" th:value="${resource.id}">
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="ui two column grid m-a-color">
+                    <div class="column center aligned">
+                      共&nbsp;<span th:text="${userResourcesCollect.pages}"></span>&nbsp;页
+                    </div>
+                    <div class="column right aligned">
+                      <a onclick="rCPageAjax(1)"
+                         th:onclick="rCPageAjax([[${userResourcesCollect.prePage}]]);"><i
+                              class="arrow large left icon m-margin-lr-normal"></i></a>
+                      <span th:text="${userResourcesCollect.pageNum}">1</span>
+                      <a onclick="rCPageAjax(0)"
+                         th:onclick="rCPageAjax([[${userResourcesCollect.nextPage}]]);"><i
+                              class="arrow large right icon m-margin-lr-normal"></i></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="blogCollectMenu">
+              <div class="ui blog m-none vertical following fluid accordion menu">
+                <div th:each="blog : ${userBlogCollect.list}" class="item">
+                  <div class="ui grid">
+                    <div class="three wide column m-vertical-center-align">
+                      <img src="../static/img/doge2.jpg"
+                           th:src="@{${blog.avatar}}"
+                           alt="" width="80px" height="40px" style="border-radius: 5px">
+                    </div>
+                    <div class="eleven wide column m-padded-tb-normal">
+                      <div class="ui header m-margin-none-all m-padded-tb-mini" th:text="${blog.title}">title</div>
+                      <div class="content m-padded-tb-mini" th:text="${blog.description}">
+                        description
+                      </div>
+                    </div>
+                    <div class="column m-vertical-center-align">
+                      <a href="#" target="_blank"
+                         th:href="@{/blog/{id}(id=${blog.id})}"><i
+                              class="arrow alternate large circle right icon"></i></a>
+                    </div>
+                    <div class="column m-vertical-center-align unfavorite">
+                      <a href="javascript:void(0)"><i class="star m-color-jianghuang large icon"></i></a>
+                    </div>
+                    <input type="hidden" th:value="${blog.id}">
+                  </div>
+                </div>
+
+                <div class="item">
+                  <div class="ui two column grid m-a-color">
+                    <div class="column center aligned">
+                      共&nbsp;<span th:text="${userBlogCollect.pages}"></span>&nbsp;页
+                    </div>
+                    <div class="column right aligned">
+                      <a onclick="bCPageAjax(1)"
+                         th:onclick="bCPageAjax([[${userBlogCollect.prePage}]]);"><i
+                              class="arrow large left icon m-margin-lr-normal"></i></a>
+                      <span th:text="${userBlogCollect.pageNum}">1</span>
+                      <a onclick="bCPageAjax(0)"
+                         th:onclick="bCPageAjax([[${userBlogCollect.nextPage}]]);"><i
+                              class="arrow large right icon m-margin-lr-normal"></i></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ui container settings m-none">
+          <div class="ui attached segment">
+            <div class="ui secondary menu">
+              <div class="item">
+                <a id="resource_btn_2" href="javascript:void(0)" class="type_btn item">我的文章</a>
+              </div>
+              <div class="item">
+                <a href="javascript:void(0)" class="type_btn item">我的资源</a>
+              </div>
+            </div>
+            <div class="ui divider"></div>
+            <div id="blogMenu">
+              <div class="ui resource_2 container m-padded-none">
+                <table class="ui striped table">
+                  <thead>
+                  <tr>
+                    <th>首图</th>
+                    <th>标题</th>
+                    <th>创建时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="blog : ${userBlogs.list}">
+                    <td>
+                      <img src="../static/img/doge2.jpg"
+                           th:src="@{${blog.avatar}}"
+                           alt="" width="80px" height="40px" style="border-radius: 5px">
+                    </td>
+                    <td th:text="${blog.title}">Title</td>
+                    <td><span th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd HH:mm:ss')}">2021-11-11</span></td>
+                    <td th:text="${blog.state}?(${blog.published}?'已发布':'审核中'):'已保存'">已发布</td>
+                    <td>
+                      <a href="" th:href="@{/blog/{id}(id=${blog.id})}" target="_blank"
+                         class="ui mini teal button m-text-thin">预览</a>
+                      <a href="" th:href="@{/blog/{id}/input(id=${blog.id})}"
+                         class="ui mini blue button m-text-thin">编辑</a>
+                      <a href="#" th:href="@{/blog/{id}/delete(id=${blog.id})}"
+                         class="ui mini orange button m-text-thin">删除</a>
+                    </td>
+                  </tr>
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th colspan="4">
+                      <div >
+                        <a  th:onclick="selfBPageAjax([[${userBlogs.prePage}]]);"
+                           class="ui mini button"
+                        >上一页</a>
+                        <div class="ui label">第<span th:text="${userBlogs.pageNum}"></span>页</div>
+                        <div class="ui label">共<span th:text="${userBlogs.pages}"></span>页</div>
+                        <a  th:onclick="selfBPageAjax([[${userBlogs.nextPage}]]);"
+                           class="ui mini button"
+                        >下一页</a>
+                      </div>
+                    </th>
+                    <th class="center aligned">
+                      <a href="" th:href="@{/blog/input}" class="ui m-text-thin mini blue button">
+                        新增文章</a>
+                    </th>
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <div id="resourcesMenu">
+              <div class="ui blog_2 m-none container m-padded-none">
+                <table class="ui striped table">
+                  <thead>
+                  <tr>
+                    <th>首图</th>
+                    <th>标题</th>
+                    <th>创建时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="resource : ${userResources.list}">
+                    <td>
+                      <img src="../static/img/doge2.jpg"
+                           th:src="@{${resource.avatar}}"
+                           alt="" width="40px" height="40px" style="border-radius: 20px">
+                    </td>
+                    <td th:text="${resource.title}">Title</td>
+                    <td><span th:text="${#dates.format(resource.updateTime,'yyyy-MM-dd HH:mm:ss')}">2021-11-11</span></td>
+                    <td th:text="${resource.state}?(${resource.published}?'已发布':'审核中'):'已保存'">已发布</td>
+                    <td>
+                      <a href="#" th:href="@{/resource/{id}(id=${resource.id})}" target="_blank"
+                         class="ui mini teal button m-text-thin">预览</a>
+                      <a href="#" th:href="@{/resource/{id}/input(id=${resource.id})}"
+                         class="ui mini blue button m-text-thin">编辑</a>
+                      <a href="#" th:href="@{/resource/{id}/delete(id=${resource.id})}"
+                         class="ui mini orange button m-text-thin">删除</a>
+                    </td>
+                  </tr>
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th colspan="4">
+                      <div >
+                        <a th:onclick="selfRPageAjax([[${userResources.prePage}]]);"
+                           class="ui mini button"
+                        >上一页</a>
+                        <div class="ui label">第<span th:text="${userResources.pageNum}"></span>页</div>
+                        <div class="ui label">共<span th:text="${userResources.pages}"></span>页</div>
+                        <a th:onclick="selfRPageAjax([[${userResources.nextPage}]]);"
+                           class="ui mini button"
+                        >下一页</a>
+                      </div>
+                    </th>
+                    <th class="center aligned">
+                      <a href="#" th:href="@{/resource/input}" class="ui m-text-thin mini blue button">新增资源</a>
+                    </th>
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ui container settings m-none">
+          <div class="ui secondary segment">
+            <div class="ui grid">
+              <div class="column">
+                <div class="ui header">我的关注</div>
+              </div>
+            </div>
+            <div class="ui secondary vertical following fluid accordion menu" style="max-height: 400px;overflow: auto">
+              <a th:each="targetUser : ${user.focusUsers}" class="item"
+                 style="max-width: 90%">
+                <div class="ui five column grid">
+                  <div class="column detail_click center aligned">
+                    <img src="../static/img/doge2.jpg"
+                         th:src="@{${targetUser.avatar}}"
+                         width="40px" height="40px" style="border-radius: 20px">
+                  </div>
+                  <input type="hidden" th:value="${targetUser.id}">
+                  <div class="column detail_click center aligned m-vertical-center-align">
+                    <div class="ui header" th:text="${targetUser.nickname}">username</div>
+                  </div>
+                  <input type="hidden" th:value="${targetUser.id}">
+                  <div class="column"></div>
+                  <div class="column"></div>
+                  <div class="column unfocus right aligned">
+                    <button class="ui basic orange button">取消关注</button>
+                  </div>
+                  <input type="hidden" th:value="${targetUser.id}">
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<br>
+<br>
+<br>
+<!--foot-->
+<div class="ui section divider"></div>
+<footer th:replace="fragment_::footer" class="ui vertical segment m-padded-tb-large">
+  <div class="ui center aligned container">
+    <div class="ui divided stackable grid">
+      <div class="three wide column center aligned">
+        <div class="ui link list">
+          <div class="item">
+            <img src="../static/img/logo2_0.png"
+                 th:src="@{/img/logo2_0.png}"
+                 class="ui rounded image"
+                 style="width:
+                            110px;">
+          </div>
+        </div>
+      </div>
+      <div class="three wide column">
+        <h4 class="ui header m-text-spaced m-text-lined">创意Blog</h4>
+        <div class="ui link list">
+          <a href="#" class="item">orange</a>
+          <a href="#" class="item">orange</a>
+          <a href="#" class="item">orange</a>
+        </div>
+      </div>
+      <div class="six wide column">
+        <h4 class="ui header m-text-spaced m-text-lined">官方</h4>
+        <div class="ui link list">
+          <a href="#" class="item">四川轻化工大学</a>
+          <a href="#" class="item">计算机科学与工程学院</a>
+          <a href="#" class="item">四川轻化工大学电子图书馆</a>
+        </div>
+      </div>
+      <div class="four wide column">
+        <h4 class="ui header m-text-spaced m-text-lined">站在巨人的肩膀上</h4>
+        <p class="m-text-spaced m-text-lined m-text-thin">技术改变世界，代码充实人生</p>
+      </div>
+    </div>
+    <div class="ui section divider"></div>
+    <p class="m-text-spaced m-text-lined m-text-thin m-opacity-tiny">蜀ICP备2021025306号-1</p>
+    <p class="m-text-spaced m-text-lined m-text-thin m-opacity-tiny">CopyRight © 2021-10 DuanQiHang Class 9 of
+      Computer Science and Technology,SUSE</p>
+  </div>
+</footer>
+
+<div class="ui dimmer modals page transition hidden">
+  <div class="ui special modal transition hidden">
+    <div class="header">
+      编辑资料
+    </div>
+    <div class="content">
+      <form id="user-form" action="#" th:action="@{/self/update}" method="post" enctype="multipart/form-data"
+            class="ui form">
+        <div class="required field">
+          <div class="ui attached segment">
+            <div class="ui basic grey header" style="opacity: 0.6">上传头像或使用默认</div>
+            <div class="ui two column grid">
+              <div id="preview" class="column m-vertical-center-align">
+                <img src="../static/img/doge2.jpg"
+                     th:src="@{${user.avatar}}"
+                     alt="" width="100px" height="100px"
+                     style="border-radius: 50px">
+              </div>
+              <div class="column">
+                <div class="ui two column grid" style="height: 100%;">
+                  <div id="drop_area" class="column  m-vertical-center-align">
+                    <div class="m-padded-normal m-vertical-center-align m-background-color"
+                         style="width:150px;height:100px;">
+                      <input type="file" name="file" id = "file" onchange="fileUpload()" style="display:none">
+                      <a href="javascript:void(0)" onclick="select_file()">
+                        <i class="upload big grey icon"></i>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="column m-vertical-center-align">
+                    <div class="ui fluid selection dropdown">
+                      <input id="default-avatar" type="hidden" name="avatar" onchange="avatarPreview()"
+                             th:value="${user.avatar}">
+                      <i class="dropdown icon"></i>
+                      <div class="default text">使用默认头像</div>
+                      <div class="menu">
+                        <div  class="item" data-value="default" th:attr="data-value=${user.avatar}"
+                        >none
+                        </div>
+                        <div  class="item" data-value="/img/default_avatar/doge2.jpg"
+                        >小金毛
+                        </div>
+                        <div  class="item" data-value="/upload/imgs/1638261296328.jpg"
+                        >诗和远方
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" name="id" th:value="${user.id}">
+        <div class="required field">
+          <div class="ui left labeled input">
+            <input th:value="${user.nickname}" type="text" name="nickname"  placeholder="昵称">
+          </div>
+        </div>
+
+          <div class="field">
+            <div class="ui left labeled action input">
+              <label class="ui compact blue basic label m-text-thin">标签</label>
+              <div class="ui fluid selection multiple search dropdown">
+                <input type="hidden" name="tagIds" th:value="${user.tagIds}">
+                <i class="dropdown icon"></i>
+                <div class="default text">标签</div>
+                <div class="menu" style="height: auto;">
+                  <div class="m-padded-normal" style="width: 100%;height: auto;">
+                    <div class="ui grid">
+                      <div th:each="type : ${types}" class="m-padded-tag">
+                        <div data-value="java" th:data-value="${type.id}"
+                             th:text="${type.name}"
+                           class="typeObj ui tag label m-margin-tb-tiny" style="cursor: pointer">
+                          JAVA
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ui divider"></div>
+                  <div class="m-padded-normal" style="width:100%;height: auto">
+                    <div id="tagTypes" class="ui grid">
+                      <a th:each="tag : ${defaultTagType.tags}" th:text="${tag.tagName}"
+                         class="ui m-a-a-color item label m-margin-normal"
+                         data-value="java" th:data-value="${tag.id}">
+                        Java</a>
+                    </div>
+                    <div th:each="type : ${types}" style="display: none">
+                      <a th:each="tag : ${type.tags}" th:text="${tag.tagName}"
+                         class="ui m-a-a-color item label m-margin-normal"
+                         data-value="java" th:data-value="${tag.id}">
+                        Java</a>
+                    </div>
+                  </div>
+                  <br>
+                  <br>
+                </div>
+              </div>
+            </div>
+          </div>
+        <div class="field">
+          <div class="ui left labeled action input">
+            <label class="ui compact blue basic label m-text-thin">专业</label>
+            <input th:value="${user.major}" type="text" name="major"  placeholder="...">
+          </div>
+        </div>
+        <div class="required field">
+          <textarea th:text="${user.description}" name="description" placeholder="个人简介..." maxlength="100"></textarea>
+        </div>
+        <div class="ui error message"></div>
+        <div class="ui right aligned container">
+          <button id="shutdown1" type="button" class="ui button">返回</button>
+          <button id="shutdown2" type="button" class="ui blue button">提交</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="../static/js/jquery-3.2.1.js" th:src="@{/js/jquery-3.2.1.js}"></script>
+<script src="../static/lib/Semantic-UI-CSS-master/semantic.min.js" th:src="@{/lib/Semantic-UI-CSS-master/semantic.min.js}"></script>
+<script th:inline="javascript">
+
+  $('.detail_click').click(function (){
+    let id = $(this).next('input').val();
+    window.open("/userdetail/"+id)
+  })
+
+  /*标签AJAX*/
+  $('.typeObj').click(function () {
+    let value = $(this).data("value");
+    $.ajax({
+      url:'/self/tagTypes',
+      type: 'GET',
+      data:{
+        value
+      },
+      dataType: 'text',
+      success: function(data){
+        $('#tagTypes').html(data)
+      }
+    })
+  })
+  /*userResourcesCollect 处理*/
+  function rCPageAjax(flag) {
+    let pageNum = flag
+    /*alert(pageNum)*/
+    $.ajax({
+      url: '/self/rCPage',
+      type: 'GET',
+      data:{
+        pageNum
+      },
+      dataType: 'text',
+      success: function(data) {
+        $('#resourceCollectMenu').html(data);
+      }
+    })
+  }
+  /*UserBlogsCollect 处理*/
+  function bCPageAjax(flag) {
+    let pageNum = flag
+    /*alert(pageNum)*/
+    $.ajax({
+      url: '/self/bCPage',
+      type: 'GET',
+      data:{
+        pageNum
+      },
+      dataType: 'text',
+      success: function(data) {
+        $('#blogCollectMenu').html(data);
+      }
+    })
+  }
+  /*UserBlogs 处理*/
+  function selfBPageAjax(flag) {
+    let pageNum = flag
+    /*alert(pageNum)*/
+    $.ajax({
+      url: '/self/selfBPage',
+      type: 'GET',
+      data:{
+        pageNum
+      },
+      dataType: 'text',
+      success: function(data) {
+        $('#blogMenu').html(data);
+      }
+    })
+  }
+  /*UserResources 处理*/
+  function selfRPageAjax(flag) {
+    let pageNum = flag
+    /*alert(pageNum)*/
+    $.ajax({
+      url: '/self/selfRPage',
+      type: 'GET',
+      data:{
+        pageNum
+      },
+      dataType: 'text',
+      success: function(data) {
+        $('#resourcesMenu').html(data);
+      }
+    })
+  }
+  /*取消收藏*/
+  $('.unfavorite').click(function () {
+    $(this).parent('.grid').parent('.item').css('display', 'none');
+    let id=$('#userId').val();
+    let blogId = $(this).next('input').val();
+    $.ajax({
+      url: '/unfavorite',
+      type: 'GET',
+      data:{
+        id,
+        blogId
+      },
+      dataType: 'text',
+      success: function(data){
+      }
+    })
+  })
+  /*取消关注*/
+  $('.unfocus').click(function(){
+    $(this).parent('.grid').parent('.item').css('display', 'none');
+    let id=$('#userId').val();
+    let targetUserId = $(this).next('input').val();
+    $.ajax({
+      url: '/unsubscribe',
+      type: 'GET',
+      data:{
+        id,
+        targetUserId
+      },
+      dataType: 'text',
+      success: function(data){
+      }
+    })
+  })
+</script>
+<!--alibaba iconfont-->
+<script src="../static/lib/ali_iconfont/iconfont.js" th:src="@{/lib/ali_iconfont/iconfont.js}"></script>
+<script>
+  /*提示消息关闭*/
+  $('.message .close')
+          .on('click', function () {
+            $(this)
+                    .closest('.message')
+                    .transition('fade');
+          });
+  /*dropdown默认图片预览*/
+  function avatarPreview() {
+    let avatarSrc = $('#default-avatar').val();
+    if(avatarSrc==null||avatarSrc==="none"){
+
+    }else{
+      let src = "<img src='"+avatarSrc+"'width='100px'height='100px' style='border-radius: 50px'>";
+      $('#preview').html(src);
+    }
+  }
+  //下拉列表
+  $('.ui.dropdown').dropdown({
+    transition: 'drop'
+  });
+  $("td").addClass("center aligned")
+  $("th").addClass("center aligned")
+  /*个人选项点击事件*/
+  $('.settings-bar').children("a").click(function () {
+    console.log("debugging...");
+    let id = $(this).attr("id")
+    $(".settings").each(function () {
+      $(this).addClass("m-none")
+    });
+    if(isNaN(id)){}else{
+      let obj = document.getElementsByClassName("settings")[parseInt(id)]
+      obj.className="ui container settings"
+    }
+  });
+  /*收藏分类*/
+  $('.type_btn').click(function () {
+    let id = $(this).attr("id")
+    if(id === "resource_btn"){
+      $('.resource').removeClass("m-none")
+      $('.blog').addClass("m-none")
+    }else if(id === "blog_btn"){
+      $('.blog').removeClass("m-none")
+      $('.resource').addClass("m-none")
+    }else if(id === "resource_btn_2"){
+      $('.resource_2').removeClass("m-none")
+      $('.blog_2').addClass("m-none")
+    }else{
+      $('.blog_2').removeClass("m-none")
+      $('.resource_2').addClass("m-none")
+    }
+  });
+  /*虚化触发*/
+  $('#rating').click(function () {
+    $('.special.modal')
+            .modal({
+              centered: false
+            })
+            .modal('show')
+    ;
+  })
+  /*虚化关闭*/
+  $("#shutdown1").click(
+          function () {
+            $('.special.modal').modal('hide');
+          }
+  )
+  $("#shutdown2").click(
+          function () {
+            $('.special.modal').modal('hide');
+            /*alert('submit')*/
+            $("#user-form").submit();
+          }
+  )
+  /*头像上传*/
+  function select_file(){
+    $("#file").trigger("click");
+  }
+  function fileUpload(){
+    var file =  $('#file')[0].files[0]; //获取文件对象
+    //检测文件是不是图片
+    if(file.type.indexOf('image') === -1){
+      alert("文件不是图片！");
+      $('#file').val('');
+      return false;
+    }
+
+    //拖拉图片到浏览器，可以实现预览功能
+    var img = window.URL.createObjectURL(file);
+    var filename = file.name; //图片名称
+    var filesize = Math.floor((file.size)/1024);
+    if(filesize>5120){
+      alert("上传大小不能超过5MB.");
+      $('#file').val('');
+      return false;
+    }
+    var str =
+            "<img src='"+img+"'width='100px'height='100px' style='border-radius: 50px'><p>图片名称："+filename+"</p><p>大小："+filesize+"KB</p>";
+    $("#preview").html(str);
+
+  }
+</script>
+</body>
+</html>

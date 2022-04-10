@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="icu.duanqihang.suse_it.mapper.CommentMapper">
+
+    <select id="getCommentByBlogId" resultMap="CommentDetails">
+        SELECT A.id fa_id,A.content fa_content,A.parent_comment_id fa_preId,A.likes fa_likes,
+               A.create_time fa_ct,A.blog_id fa_blogId,A.user_id fa_userId,
+
+               B.id son_id,B.content son_content,B.parent_comment_id son_preId,B.likes son_likes,
+               B.create_time son_ct,B.blog_id son_blogId,B.user_id son_userId,
+
+               C_.id user_id,C_.nickname user_nickname,C_.avatar user_avatar
+
+        from suse.t_comment A
+                 left join suse.t_comment B on B.parent_comment_id=A.id
+                 inner join suse.t_user C_ on C_.id=A.user_id
+        where A.blog_id=#{blogId} and A.parent_comment_id=0
+    </select>
+    <resultMap id="CommentDetails" type="icu.duanqihang.suse_it.pojo.Comment">
+        <result property="id" column="fa_id"/>
+        <result property="content" column="fa_content"/>
+        <result property="parentCommentId" column="fa_preId"/>
+        <result property="likes" column="fa_likes"/>
+        <result property="createTime" column="fa_ct"/>
+        <result property="blogId" column="fa_blogId"/>
+        <result property="userId" column="fa_userId"/>
+        <association property="user" javaType="icu.duanqihang.suse_it.pojo.User">
+            <result property="id" column="user_id"/>
+            <result property="nickname" column="user_nickname"/>
+            <result property="avatar" column="user_avatar"/>
+        </association>
+        <collection property="replyComments" ofType="icu.duanqihang.suse_it.pojo.Comment">
+            <result property="id" column="son_id"/>
+            <result property="content" column="son_content"/>
+            <result property="parentCommentId" column="son_preId"/>
+            <result property="likes" column="son_likes"/>
+            <result property="createTime" column="son_ct"/>
+            <result property="blogId" column="son_blogId"/>
+            <result property="userId" column="son_userId"/>
+        </collection>
+    </resultMap>
+
+    <select id="getCommentUser" resultType="icu.duanqihang.suse_it.pojo.User">
+        select B.id,B.avatar,B.nickname
+        from suse.t_comment A,suse.t_user B
+        where A.id = #{commentId} and A.user_id=B.id;
+    </select>
+</mapper>

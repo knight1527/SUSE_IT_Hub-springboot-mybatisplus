@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="icu.duanqihang.suse_it.mapper.UserMapper">
+    <insert id="insertFocus">
+        insert into t_user_user(user_id,target_user_id) value(#{id},#{targetUserId})
+    </insert>
+    <delete id="deleteFocus">
+        delete from t_user_user where user_id=#{id} and target_user_id=#{targetUserId}
+    </delete>
+
+
+    <select id="getUserDetail" resultType="icu.duanqihang.suse_it.pojo.User" resultMap="SampleUser" useCache="false">
+        select A.id user_id,A.email user_email,A.avatar user_avatar,A.major user_major,A.create_time user_ct,
+               A.description user_des,A.nickname user_nickname,
+               B.tag_id tagId,D.name tagName,
+               E.id target_user_id,E.avatar target_user_avatar,E.nickname target_user_nickname
+        from t_user A
+                 left join t_user_tag B on A.id=B.user_id
+                 left join t_user_user C_ on A.id=C_.user_id
+                 left join t_tag D on B.tag_id=D.id
+                 left join t_user E on C_.target_user_id=E.id
+        where A.id=#{id}
+    </select>
+    <select id="getFocus" resultType="java.lang.Long">
+        select target_user_id from t_user_user where user_id=#{id}
+    </select>
+    <resultMap id="SampleUser" type="icu.duanqihang.suse_it.pojo.User">
+        <result property="id" column="user_id"/>
+        <result property="email" column="user_email"/>
+        <result property="avatar" column="user_avatar"/>
+        <result property="major" column="user_major"/>
+        <result property="createTime" column="user_ct"/>
+        <result property="description" column="user_des"/>
+        <result property="nickname" column="user_nickname"/>
+        <collection property="tags" ofType="icu.duanqihang.suse_it.pojo.Tag">
+            <result property="id" column="tagId"/>
+            <result property="tagName" column="tagName"/>
+        </collection>
+        <collection property="focusUsers" ofType="icu.duanqihang.suse_it.pojo.User">
+            <result property="id" column="target_user_id"/>
+            <result property="avatar" column="target_user_avatar"/>
+            <result property="nickname" column="target_user_nickname"/>
+        </collection>
+    </resultMap>
+</mapper>

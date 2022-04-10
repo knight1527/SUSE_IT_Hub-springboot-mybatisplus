@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" type="text/css" href="../static/lib/Semantic-UI-CSS-master/semantic.min.css" th:href="@{/lib/Semantic-UI-CSS-master/semantic.min.css}">
+    <link rel="stylesheet" type="text/css" href="../static/lib/prism/prism.css">
+</head>
+<body class="line-numbers">
+<!--标签分类ajax-->
+<a th:fragment="tagTypes" th:each="tag : ${defaultTagType.tags}" th:text="${tag.tagName}"
+   class="ui m-a-a-color item label m-margin-normal"
+   data-value="java" th:data-value="${tag.id}">
+    Java</a>
+<!--userResourcesCollect-->
+<div th:fragment="resourceCollectMenu" class="ui resource vertical following fluid accordion menu">
+    <div th:each="resource : ${userResourcesCollect.list}" class="item">
+        <div class="ui grid">
+            <div class="two wide column m-vertical-center-align">
+                <img src="../static/img/doge2.jpg"
+                     th:src="@{${resource.avatar}}"
+                     alt="" width="40px" height="40px" style="border-radius: 20px">
+            </div>
+            <div class="twelve wide column m-padded-tb-normal">
+                <div class="ui header m-margin-none-all m-padded-tb-mini" th:text="${resource.title}">title</div>
+                <div class="content m-padded-tb-mini" th:text="${resource.description}">
+                    description
+                </div>
+            </div>
+            <div class="column m-vertical-center-align">
+                <a href="#" target="_blank"
+                   th:href="@{/resource/{id}(id=${resource.id})}"><i
+                        class="arrow alternate large circle right icon"></i></a>
+            </div>
+            <div class="column m-vertical-center-align unfavorite">
+                <a href="javascript:void(0)"><i class="star m-color-jianghuang large icon"></i></a>
+            </div>
+            <input type="hidden" th:value="${resource.id}">
+        </div>
+    </div>
+    <div class="item">
+        <div class="ui two column grid m-a-color">
+            <div class="column center aligned">
+                共&nbsp;<span th:text="${userResourcesCollect.pages}"></span>&nbsp;页
+            </div>
+            <div class="column right aligned">
+                <a onclick="rCPageAjax(1)" th:onclick="rCPageAjax([[${userResourcesCollect.prePage}]]);"><i class="arrow large left icon m-margin-lr-normal"></i></a>
+                <span th:text="${userResourcesCollect.pageNum}">1</span>
+                <a onclick="rCPageAjax(0)" th:onclick="rCPageAjax([[${userResourcesCollect.nextPage}]]);"><i
+                        class="arrow large right icon m-margin-lr-normal"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--userBlogCollect-->
+<div th:fragment="blogCollectMenu" class="ui blog vertical following fluid accordion menu">
+    <div th:each="blog : ${userBlogCollect.list}" class="item">
+        <div class="ui grid">
+            <div class="three wide column m-vertical-center-align">
+                <img src="../static/img/doge2.jpg"
+                     th:src="@{${blog.avatar}}"
+                     alt="" width="80px" height="40px" style="border-radius: 5px">
+            </div>
+            <div class="eleven wide column m-padded-tb-normal">
+                <div class="ui header m-margin-none-all m-padded-tb-mini" th:text="${blog.title}">title</div>
+                <div class="content m-padded-tb-mini" th:text="${blog.description}">
+                    description
+                </div>
+            </div>
+            <div class="column m-vertical-center-align">
+                <a href="#" target="_blank"
+                   th:href="@{/blog/{id}(id=${blog.id})}"><i
+                        class="arrow alternate large circle right icon"></i></a>
+            </div>
+            <div class="column m-vertical-center-align unfavorite">
+                <a href="javascript:void(0)"><i class="star m-color-jianghuang large icon"></i></a>
+            </div>
+            <input type="hidden" th:value="${blog.id}">
+        </div>
+    </div>
+    <div class="item">
+        <div class="ui two column grid m-a-color">
+            <div class="column center aligned">
+                共&nbsp;<span th:text="${userBlogCollect.pages}"></span>&nbsp;页
+            </div>
+            <div class="column right aligned">
+                <a onclick="bCPageAjax(1)" th:onclick="bCPageAjax([[${userBlogCollect.prePage}]]);"><i class="arrow large left icon m-margin-lr-normal"></i></a>
+                <span th:text="${userBlogCollect.pageNum}">1</span>
+                <a onclick="bCPageAjax(0)" th:onclick="bCPageAjax([[${userBlogCollect.nextPage}]]);"><i
+                        class="arrow large right icon m-margin-lr-normal"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--userBlogs-->
+<div th:fragment="blogMenu" class="ui resource_2 container m-padded-none">
+    <table class="ui striped table">
+        <thead>
+        <tr>
+            <th>首图</th>
+            <th>标题</th>
+            <th>创建时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="blog : ${userBlogs.list}">
+            <td>
+                <img src="../static/img/doge2.jpg"
+                     th:src="@{${blog.avatar}}"
+                     alt="" width="80px" height="40px" style="border-radius: 5px">
+            </td>
+            <td th:text="${blog.title}">Title</td>
+            <td><span th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd HH:mm:ss')}">2021-11-11</span></td>
+            <td th:text="${blog.state}?(${blog.published}?'已发布':'审核中'):'已保存'">已发布</td>
+            <td>
+                <a href="" th:href="@{/blog/{id}(id=${blog.id})}" target="_blank"
+                   class="ui mini teal button m-text-thin">预览</a>
+                <a href="" th:href="@{/blog/{id}/input(id=${blog.id})}"
+                   class="ui mini blue button m-text-thin">编辑</a>
+                <a href="#" th:href="@{/blog/{id}/delete(id=${blog.id})}"
+                   class="ui mini orange button m-text-thin">删除</a>
+            </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <th colspan="4">
+                <div >
+                    <a  th:onclick="selfBPageAjax([[${userBlogs.prePage}]]);" class="ui mini button"
+                    >上一页</a>
+                    <div class="ui label">第<span th:text="${userBlogs.pageNum}"></span>页</div>
+                    <div class="ui label">共<span th:text="${userBlogs.pages}"></span>页</div>
+                    <a  th:onclick="selfBPageAjax([[${userBlogs.nextPage}]]);" class="ui mini button"
+                    >下一页</a>
+                </div>
+            </th>
+            <th class="center aligned">
+                <a href="" th:href="@{/blog/input}" class="ui m-text-thin mini blue button">新增文章</a>
+            </th>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+<!--userResources-->
+<div th:fragment="resourceMenu" class="ui blog_2 container m-padded-none">
+    <table class="ui striped table">
+        <thead>
+        <tr>
+            <th>首图</th>
+            <th>标题</th>
+            <th>创建时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="resource : ${userResources.list}">
+            <td>
+                <img src="../static/img/doge2.jpg"
+                     th:src="@{${resource.avatar}}"
+                     alt="" width="40px" height="40px" style="border-radius: 20px">
+            </td>
+            <td th:text="${resource.title}">Title</td>
+            <td><span th:text="${#dates.format(resource.updateTime,'yyyy-MM-dd HH:mm:ss')}">2021-11-11</span></td>
+            <td th:text="${resource.state}?(${resource.published}?'已发布':'审核中'):'已保存'">已发布</td>
+            <td>
+                <a href="#" th:href="@{/resource/{id}(id=${resource.id})}" target="_blank"
+                   class="ui mini teal button m-text-thin">预览</a>
+                <a href="#" th:href="@{/resource/{id}/input(id=${resource.id})}"
+                   class="ui mini blue button m-text-thin">编辑</a>
+                <a href="#" th:href="@{/resource/{id}/delete(id=${resource.id})}"
+                   class="ui mini orange button m-text-thin">删除</a>
+            </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <th colspan="4">
+                <div >
+                    <a  th:onclick="selfRPageAjax([[${userResources.prePage}]]);" class="ui mini button"
+                    >上一页</a>
+                    <div class="ui label">第<span th:text="${userResources.pageNum}"></span>页</div>
+                    <div class="ui label">共<span th:text="${userResources.pages}"></span>页</div>
+                    <a  th:onclick="selfRPageAjax([[${userResources.nextPage}]]);"
+                       class="ui mini button"
+                    >下一页</a>
+                </div>
+            </th>
+            <th class="center aligned">
+                <a href="#" th:href="@{/resource/input}" class="ui m-text-thin mini blue button">新增资源</a>
+            </th>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+
+<!--点赞收藏等小fragment-->
+<div th:fragment="dianzan">
+    <a href="javascript:void(0)"
+       class="ui label m-toolbar-icon">
+        <svg class="icon m-color-tiffany m-margin-auto" aria-hidden="true" style="font-size: 20px;width: 20px;height: 20px;">
+            <use xlink:href="#icon-dianzan2"></use>
+        </svg>
+    </a>
+    <div class="ui mini left pointing label m-padded-mini"><span th:text="${blog.likes}==null?0:${blog.likes}">313</span>
+    </div>
+</div>
+<div th:fragment="dianzaned">
+    <p id="dianzanTips" class="m-color-bondiblue">已赞过</p>
+    <a href="javascript:void(0)"
+       class="ui label m-toolbar-icon">
+        <svg class="icon m-color-tiffany m-margin-auto" aria-hidden="true" style="font-size: 20px;width: 20px;height: 20px;">
+            <use xlink:href="#icon-dianzan2"></use>
+        </svg>
+    </a>
+    <div class="ui mini left pointing label m-padded-mini"><span th:text="${blog.likes}==null?0:${blog.likes}">313</span>
+    </div>
+</div>
+<div th:fragment="shoucang">
+    <a
+       class="ui label m-toolbar-icon like_rating">
+        <svg id="collect" class="icon m-margin-auto" aria-hidden="true" style="font-size: 20px;width: 20px;height: 20px;">
+            <use xlink:href="#icon-shoucang1"></use>
+        </svg>
+    </a>
+    <div style="display: none" class="ui mini left pointing label m-padded-mini"
+    ><span>收藏</span></div>
+</div>
+<div th:fragment="shoucanged">
+    <a
+       class="ui label m-toolbar-icon like_rating">
+        <svg id="collect" class="icon m-color-jianghuang m-margin-auto"
+             aria-hidden="true"
+             style="font-size: 20px;width: 20px;height: 20px;">
+            <use xlink:href="#icon-shoucang1"></use>
+        </svg>
+    </a>
+    <div style="display: none" class="ui mini left pointing label m-padded-mini"
+    ><span>收藏</span></div>
+</div>
+
+<div th:fragment="unfavorite">
+    <p>取消收藏</p>
+</div>
+
+<div th:fragment="tagEntity">
+    <div th:each="blog : ${bloglist.list}"
+         class="ui vertical segment m-padded-big m-padded-tb-big-f m-mobile-lr-clear m-self-box-shadow">
+        <div class="ui middle aligned mobile reversed stackable grid">
+            <div class="eleven wide column">
+                <h3
+                        class="ui header"><a href="#" th:href="@{/blog/{id}(id=${blog.id})}" target="_blank">
+                    <span th:text="${blog.title}"></span></a></h3>
+                <p class="m-text" th:text="|${blog.description}......|">
+                    人类文明的发展要经历挫折，物质文明和汉语文明均是如此。我们还是中华民族兴旺发达的需要.</p>
+                <div class="ui stackable grid">
+                    <div class="row">
+                        <div class="eleven wide column">
+                            <div class="ui mini horizontal link list">
+                                <div class="item">
+                                    <img src="https://unsplash.it/800/450?image=1005"
+                                         th:src="@{${blog.user.avatar}}"
+                                         class="ui avatar image">
+                                    <div class="content"><a href="#"
+                                                            th:text="${blog.user.nickname}"
+                                                            class="header m-text-thin">段启航
+                                    </a></div>
+                                </div>
+                                <div class="item">
+                                    <i class="clock outline icon"></i><span th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd HH:mm:ss')}">2021-7
+                                                        -15</span>
+                                </div>
+                                <div class="item">
+                                    <i class="eye icon"></i><span>2
+                                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="five wide column">
+                <a href="#" target="_blank" style="width: 800px; height:450px;">
+                    <img src="https://unsplash.it/800/450?image=1005"
+                         th:src="@{${blog.avatar}}"
+                         class="ui rounded image">
+                </a>
+            </div>
+            <div class="row m-padded-tb-normal">
+                <div class="eleven wide column">
+                    <div class="ui grid">
+                        <div class="item m-padded-tag">
+                            <i class="tags mini icon m-opacity-mini m-padded-normal"></i>
+                        </div>
+                        <div th:each="tag : ${blog.tags}" class="item m-padded-tag">
+                            <a href="#" target="_blank"
+                               th:classappend="${tag.id==tagId} ? ' teal'"
+                               th:text="${tag.tagName}"
+                               class="ui label m-margin-tb-tiny">
+                                JAVA
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="five wide column m-text-thin m-opacity-tiny">
+                    <div class="ui grid">
+                        <div class="m-padded-tag">
+                            <i class="thumbs up outline icon"></i>
+                            <span th:text="${blog.likes}==null?0:${blog.likes}">100</span>
+                        </div>
+                        <div class="m-padded-tag">
+                            <i class="heart outline icon"></i>
+                            <span th:text="${blog.collect}==null?0:${blog.collect}">100</span>
+                        </div>
+                        <div class="m-padded-tag">
+                            <i class="comments outline icon"></i>
+                            <span th:text="${blog.commentNumber}==null?0:${blog.commentNumber}">100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="ui column basic segment grid">
+        <div class="column center aligned">
+            <div class="ui buttons" style="opacity: 0.8">
+                <button type="button" class="ui labeled icon button">
+                    <a class="m-a-a-color" th:onclick="tagEntityPage([[${bloglist.prePage}]]);">
+                        <i class="left chevron icon"></i>
+                        上一页
+                    </a>
+                </button>
+                <button type="button" class="ui button"><a class="m-a-a-color"
+                                                           th:onclick="tagEntityPage([[${bloglist.firstPage}]]);">
+                    first
+                </a>
+                </button>
+                <button type="button" class="ui button"><a class="m-a-a-color" href="">
+                    第&nbsp;<span th:text="${bloglist.pageNum}"></span>&nbsp;页
+                </a>
+                </button>
+                <button class="ui button"><a class="m-a-a-color" href="">
+                    共&nbsp;<span th:text="${bloglist.pages}"></span>&nbsp;页
+                </a>
+                </button>
+                <button type="button" class="ui button"><a class="m-a-a-color"
+                                                           th:onclick="tagEntityPage([[${bloglist.lastPage}]]);">
+                    last
+                </a>
+                </button>
+                <button type="button" class="ui right labeled icon button">
+                    <a th:onclick="tagEntityPage([[${bloglist.nextPage}]]);"
+                       class="m-a-a-color">
+                        下一页
+                        <i class="right chevron icon"></i>
+                    </a>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="tagEntityRe">
+    <div class="ui basic segment grid">
+        <!--资源项-->
+        <div th:each="resource : ${pages.list}"
+             class="ui segment resource m-margin-lr m-width-twenty-four m-border-none m-self-box-shadow">
+            <div class="ui two column stackable grid m-margin-none-all" style="width: 100%;">
+                <div class="column">
+                    <img class="ui image item" src="../static/img/0982417dda4047d2bc68ae909cb75a49.jpg"
+                         th:src="@{${resource.avatar}}"
+                         alt=""
+                         style="width: 120px;height: 90px">
+                </div>
+                <div class="column" style="overflow: hidden">
+                    <h3>
+                        <a href="" th:href="@{/resource/{id}(id=${resource.id})}" th:text="${resource.title}">
+                            header header header header
+                        </a>
+                    </h3>
+                </div>
+            </div>
+            <div class="m-padded-normal">
+                <span th:text="${resource.description}">description</span>
+            </div>
+            <div>
+                <div class="ui m-padded-normal m-padded-lr-big grid m-padded-bottom-none">
+                    <div class="column right aligned">
+                        <a href="#" th:each="tag : ${resource.tags}"
+                           th:classappend="${tag.id==tagId} ? ' teal'"
+                           class="ui mini label m-margin-tb-tiny"
+                           th:text="${tag.tagName}"
+                        >
+                            JAVA
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="ui two column stackable m-padded-normal m-padded-lr-big grid">
+                <div class="column" style="width:40%">
+                    评价：
+                </div>
+                <div class="column center aligned" style="width:60%">
+                    <div class="ui star rating similarity" th:attr="data-rating=${resource.score}" data-rating="3"
+                         data-max-rating="5"></div>
+                </div>
+            </div>
+            <div class="ui three item secondary menu m-border-none m-margin-none-all m-a-color">
+                <div class="item">
+                    <a href="#" id="like">
+                        <i class="thumbs up large icon"></i>
+                    </a>
+                </div>
+                <div class="item">
+                    <a href="#" class="re_user_favorite" data-reid="0" th:attr="data-reid=${resource.id}">
+                        <i class="heart large icon" th:classappend="${resource.collectjudge}?'m-color-jianghuang'"></i>
+                    </a>
+                </div>
+                <div class="item">
+                    <a href="#">
+                        <i class="share large icon link"></i>
+                        <div class="ui flowing popup top left transition hidden">
+                            <div class="ui one column divided center aligned grid">
+                                <div class="column" id="link">
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="ui column basic segment grid">
+        <div class="column left aligned">
+            <div class="ui buttons" style="opacity: 0.8">
+                <button type="button" class="ui labeled icon button">
+                    <a class="m-a-a-color" th:onclick="tagEntityPage([[${pages.prePage}]]);">
+                        <i class="left chevron icon"></i>
+                        上一页
+                    </a>
+                </button>
+                <button type="button" class="ui button"><a class="m-a-a-color"
+                                                           th:onclick="tagEntityPage([[${pages.firstPage}]]);">
+                    first
+                </a>
+                </button>
+                <button type="button" class="ui button"><a class="m-a-a-color" href="">
+                    第&nbsp;<span th:text="${pages.pageNum}"></span>&nbsp;页
+                </a>
+                </button>
+                <button class="ui button"><a class="m-a-a-color" href="">
+                    共&nbsp;<span th:text="${pages.pages}"></span>&nbsp;页
+                </a>
+                </button>
+                <button type="button" class="ui button"><a class="m-a-a-color"
+                                                           th:onclick="tagEntityPage([[${pages.lastPage}]]);">
+                    last
+                </a>
+                </button>
+                <button type="button" class="ui right labeled icon button">
+                    <a th:onclick="tagEntityPage([[${pages.nextPage}]]);"
+                       class="m-a-a-color">
+                        下一页
+                        <i class="right chevron icon"></i>
+                    </a>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="commentList">
+    <div class="ui threaded comments" style="max-width: 100%;">
+        <h3 class="ui dividing header">全部评论（<span th:text="${commentNumber}">12</span>）</h3>
+        <div class="comment" th:each="FirstLevelComment : ${replyComments}">
+            <a class="avatar">
+                <img src="../static/img/doge2.jpg" th:src="@{${FirstLevelComment.user.avatar}}">
+            </a>
+            <div class="content">
+                <a class="author">
+                    <span th:text="${FirstLevelComment.user.nickname}">Matt</span>
+                    <div class="ui mini basic blue left pointing label m-padded-mini"
+                         th:if="${AuthorId}==${FirstLevelComment.user.id}">博主
+                    </div>
+                </a>
+                <div class="metadata">
+                  <span class="date" th:text="${#dates.format(FirstLevelComment.createTime,'yyyy-MM-dd hh:mm')}">Today
+                    at
+                    5:42PM</span>
+                </div>
+                <div class="text" th:text="${FirstLevelComment.content}">
+                    How artistic!
+                </div>
+                <div class="actions">
+                    <div style="display: inline" th:classappend="${FirstLevelComment.id}">
+                        <a class="reply commentLikes" data-commentid="0" th:attr="data-commentid=${FirstLevelComment.id}">
+                            <svg class="icon m-margin-auto" aria-hidden="true" style="font-size: 16px;width: 16px;height:
+                    16px;">
+                                <use xlink:href="#icon-dianzan2"></use>
+                            </svg>
+                            <span th:text="${FirstLevelComment.likes}">12</span>
+                        </a>
+                    </div>
+                    <a class="reply" data-commentid="0" data-commentnickname="Matt"
+                       th:attr="data-commentid=${FirstLevelComment.id},data-commentnickname=${FirstLevelComment.user.nickname}"
+                       onclick="reply(this)">
+                        <svg class="icon m-margin-auto" aria-hidden="true" style="font-size: 16px;width: 16px;height:
+                    16px;">
+                            <use xlink:href="#icon-pinglun"></use>
+                        </svg>
+                        Reply
+                    </a>
+                </div>
+            </div>
+            <div class="comments comments-none" th:if="${#arrays.length(FirstLevelComment.replyComments)}>0"><a>查看全部回复（<span
+                    th:text="${#arrays.length(FirstLevelComment.replyComments)}">1</span>）</a></div>
+            <div style="display:none" class="comments" th:if="${#arrays.length(FirstLevelComment.replyComments)}>0">
+                <div class="comment" th:each="reply : ${FirstLevelComment.replyComments}">
+                    <a class="avatar">
+                        <img src="../static/img/doge2.jpg" th:src="@{${reply.user.avatar}}">
+                    </a>
+                    <div class="content">
+                        <a class="author">
+                            <span th:text="${reply.user.nickname}">Matt</span>
+                            <div class="ui mini basic blue left pointing label m-padded-mini"
+                                 th:if="${reply.user.id}==${AuthorId}">博主</div>
+                        </a>
+                        <div class="metadata">
+                      <span class="date" th:text="${#dates.format(reply.createTime,'yyyy-MM-dd hh:mm')}">Today
+                    at
+                    5:42PM</span>
+                        </div>
+                        <div class="text" th:text="${reply.content}">
+                            How artistic!
+                        </div>
+                        <div class="actions">
+                            <div style="display: inline" th:classappend="${reply.id}">
+                                <a class="reply commentLikes" data-commentid="0"
+                                   th:attr="data-commentid=${reply.id}">
+                                    <svg class="icon m-margin-auto" aria-hidden="true" style="font-size: 16px;width: 16px;height:
+                    16px;">
+                                        <use xlink:href="#icon-dianzan2"></use>
+                                    </svg>
+                                    <span th:text="${reply.likes}">12</span>
+                                </a>
+                            </div>
+                            <a class="reply" data-commentid="1"
+                               th:attr="data-commentid=${FirstLevelComment.id},data-commentnickname=${reply.user.nickname}"
+                               data-commentnickname="Matt"
+                               onclick="reply(this)">
+                                <svg class="icon m-margin-auto" aria-hidden="true" style="font-size: 16px;width: 16px;height:
+                    16px;">
+                                    <use xlink:href="#icon-pinglun"></use>
+                                </svg>
+                                Reply
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a th:fragment="commentlikes" class="reply commentLikes" data-commentid="0"
+       th:attr="data-commentid=${replyId}">
+        <svg class="icon m-color-bondiblue m-margin-auto" aria-hidden="true" style="font-size: 16px;width: 16px;height:
+                    16px;">
+            <use xlink:href="#icon-dianzan2"></use>
+        </svg>
+        <span th:text="${replyLikes}">12</span>
+    </a>
+
+<a th:fragment="commentlikesed" class="reply commentLikes" data-commentid="0"
+       th:attr="data-commentid=${replyId}">
+        <span th:classappend="${replyId}+'likesTips'" class="m-color-bondiblue">已赞过</span>
+        <svg class="icon m-color-bondiblue m-margin-auto" aria-hidden="true" style="font-size: 16px;width: 16px;height:
+                    16px;">
+            <use xlink:href="#icon-dianzan2"></use>
+        </svg>
+        <span th:text="${replyLikes}">12</span>
+    </a>
+
+<footer th:fragment="footer" class="ui vertical segment m-padded-tb-large">
+    <div class="ui center aligned container">
+        <div class="ui divided stackable grid">
+            <div class="three wide column center aligned">
+                <div class="ui link list">
+                    <div class="item">
+                        <img src="../static/img/logo2_0.png" th:src="@{/img/logo2_0.png}" class="ui rounded image"
+                             style="width:
+                            110px;">
+                    </div>
+                </div>
+            </div>
+            <div class="three wide column">
+                <h4 class="ui header m-text-spaced m-text-lined">创意Blog</h4>
+                <div class="ui link list">
+                    <a href="#" class="item">orange</a>
+                    <a href="#" class="item">orange</a>
+                    <a href="#" class="item">orange</a>
+                </div>
+            </div>
+            <div class="six wide column">
+                <h4 class="ui header m-text-spaced m-text-lined">官方</h4>
+                <div class="ui link list">
+                    <a href="#" class="item">四川轻化工大学</a>
+                    <a href="#" class="item">计算机科学与工程学院</a>
+                    <a href="#" class="item">四川轻化工大学电子图书馆</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui header m-text-spaced m-text-lined">站在巨人的肩膀上</h4>
+                <p class="m-text-spaced m-text-lined m-text-thin">技术改变世界，代码充实人生</p>
+            </div>
+        </div>
+        <div class="ui section divider"></div>
+        <p class="m-text-spaced m-text-lined m-text-thin m-opacity-tiny">蜀ICP备2021025306号-1</p>
+        <p class="m-text-spaced m-text-lined m-text-thin m-opacity-tiny">CopyRight © 2021-10 DuanQiHang Class 9 of
+            Computer Science and Technology,SUSE</p>
+    </div>
+</footer>
+
+
+<script src="../static/lib/prism/prism.js"></script>
+</body>
+</html>

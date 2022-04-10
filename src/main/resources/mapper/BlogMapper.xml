@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="icu.duanqihang.suse_it.mapper.BlogMapper">
+
+    <sql id="somesql">
+    </sql>
+
+    <select id="getDefaultBlogPage" resultType="icu.duanqihang.suse_it.pojo.Blog" resultMap="CompleteBlog">
+        select A.id b_id,A.title b_title,A.likes b_likes,A.avatar b_avatar,A.description b_des,A.published b_pub,
+               A.state b_state, A.create_time b_ct,A.update_time b_ut,A.link b_link,A.comment_number b_number,
+               A.content b_content,A.type b_type,A.score b_score,A.collect b_collect,
+
+               B.id com_id,B.content com_content,B.parent_comment_id pre_com_id,B.likes com_likes,
+               B.create_time com_ct,B.user_id com_userId,
+
+               C_.tag_id tagId,
+               D.name tagName,
+
+               E.id user_id,
+               E.nickname username,
+               E.avatar user_avatar
+        from    t_blog A
+                    left join t_comment B on A.id = B.id
+                    left join t_blog_tag C_ on A.id = C_.blog_id
+                    left join t_tag D on C_.tag_id = D.id
+                    left join t_user E on A.user_id = E.id
+        where A.published = true and A.type = true
+        order by A.score desc , A.update_time desc
+    </select>
+    <resultMap id="CompleteBlog" type="icu.duanqihang.suse_it.pojo.Blog">
+        <result property="id" column="b_id"/>
+        <result property="title" column="b_title"/>
+        <result property="likes" column="b_likes"/>
+        <result property="avatar" column="b_avatar"/>
+        <result property="description" column="b_des"/>
+        <result property="published" column="b_pub"/>
+        <result property="state" column="b_state"/>
+        <result property="createTime" column="b_ct"/>
+        <result property="updateTime" column="b_ut"/>
+        <result property="link" column="b_link"/>
+        <result property="commentNumber" column="b_number"/>
+        <result property="content" column="b_content"/>
+        <result property="type" column="b_type"/>
+        <result property="score" column="b_score"/>
+        <result property="collect" column="b_collect"/>
+        <association property="user" javaType="icu.duanqihang.suse_it.pojo.User">
+            <result property="id" column="user_id"/>
+            <result property="nickname" column="username"/>
+            <result property="avatar" column="user_avatar"/>
+        </association>
+        <collection property="tags" ofType="icu.duanqihang.suse_it.pojo.Tag">
+            <result property="id" column="tagId"/>
+            <result property="tagName" column="tagName"/>
+        </collection>
+        <collection property="comments" ofType="icu.duanqihang.suse_it.pojo.Comment">
+            <result property="id" column="com_id"/>
+            <result property="content" column="com_content"/>
+            <result property="parentCommentId" column="pre_com_id"/>
+            <result property="likes" column="com_likes"/>
+            <result property="createTime" column="com_ct"/>
+            <result property="userId" column="com_userId"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="sampleResourcesPages" resultMap="CompleteSampleResource">
+        select A.id b_id,A.title b_title,A.avatar b_avatar,A.description b_description,A.score b_score,
+               C_.tag_id tagId,
+               D.name tagName
+
+        from    t_blog A
+                    left join t_blog_tag C_ on A.id = C_.blog_id
+                    left join t_tag D on C_.tag_id = D.id
+
+        where A.published = true and A.type = false
+        order by A.score desc , A.update_time desc
+    </select>
+    <resultMap id="CompleteSampleResource" type="icu.duanqihang.suse_it.pojo.Blog">
+        <result property="id" column="b_id"/>
+        <result property="title" column="b_title"/>
+        <result property="avatar" column="b_avatar"/>
+        <result property="description" column="b_description"/>
+        <result property="score" column="b_score"/>
+        <collection property="tags" ofType="icu.duanqihang.suse_it.pojo.Tag">
+            <result property="id" column="tagId"/>
+            <result property="tagName" column="tagName"/>
+        </collection>
+    </resultMap>
+
+    <select id="getUserBlogCollects" resultType="icu.duanqihang.suse_it.pojo.Blog">
+        select distinct B.*
+        from t_user_blog A,t_blog B
+        where A.user_id=#{id} and A.blog_id=B.id and B.published=true and B.type=true
+    </select>
+
+    <select id="getUserResourceCollect" resultType="icu.duanqihang.suse_it.pojo.Blog">
+        select distinct B.*
+        from t_user_blog A,t_blog B
+        where A.user_id=#{id} and A.blog_id=B.id and B.published=true and B.type=false
+    </select>
+
+
+    <select id="getBlogDetailById" resultMap="BlogDetail">
+        select A.id b_id,A.title b_title,A.likes b_likes,A.avatar b_avatar,A.description b_des,A.published b_pub,
+               A.state b_state, A.create_time b_ct,A.update_time b_ut,A.link b_link,A.comment_number b_number,
+               A.content b_content,A.type b_type,A.score b_score,A.collect b_collect,A.flag b_flag,
+
+               B.id com_id,B.content com_content,B.parent_comment_id pre_com_id,B.likes com_likes,
+               B.create_time com_ct,B.user_id com_userId,
+
+               C_.tag_id tagId,
+               D.name tagName,
+
+               E.id user_id,
+               E.nickname username,
+               E.avatar user_avatar
+        from    t_blog A
+                    left join t_comment B on A.id = B.id
+                    left join t_blog_tag C_ on A.id = C_.blog_id
+                    left join t_tag D on C_.tag_id = D.id
+                    left join t_user E on A.user_id = E.id
+        where A.id=#{id}
+    </select>
+
+    <resultMap id="BlogDetail" type="icu.duanqihang.suse_it.pojo.Blog">
+        <result property="id" column="b_id"/>
+        <result property="title" column="b_title"/>
+        <result property="likes" column="b_likes"/>
+        <result property="avatar" column="b_avatar"/>
+        <result property="description" column="b_des"/>
+        <result property="published" column="b_pub"/>
+        <result property="state" column="b_state"/>
+        <result property="createTime" column="b_ct"/>
+        <result property="updateTime" column="b_ut"/>
+        <result property="link" column="b_link"/>
+        <result property="commentNumber" column="b_number"/>
+        <result property="content" column="b_content"/>
+        <result property="type" column="b_type"/>
+        <result property="score" column="b_score"/>
+        <result property="collect" column="b_collect"/>
+        <result property="flag" column="b_flag"/>
+        <association property="user" javaType="icu.duanqihang.suse_it.pojo.User">
+            <result property="id" column="user_id"/>
+            <result property="nickname" column="username"/>
+            <result property="avatar" column="user_avatar"/>
+        </association>
+        <collection property="tags" ofType="icu.duanqihang.suse_it.pojo.Tag">
+            <result property="id" column="tagId"/>
+            <result property="tagName" column="tagName"/>
+        </collection>
+        <collection property="comments" ofType="icu.duanqihang.suse_it.pojo.Comment">
+            <result property="id" column="com_id"/>
+            <result property="content" column="com_content"/>
+            <result property="parentCommentId" column="pre_com_id"/>
+            <result property="likes" column="com_likes"/>
+            <result property="createTime" column="com_ct"/>
+            <result property="userId" column="com_userId"/>
+        </collection>
+    </resultMap>
+
+    <select id="getUserAllBlog" resultType="icu.duanqihang.suse_it.pojo.Blog" resultMap="AllBlogById">
+        select A.id b_id,A.title b_title,A.likes b_likes,A.avatar b_avatar,A.description b_des,A.published b_pub,
+               A.state b_state, A.create_time b_ct,A.update_time b_ut,A.link b_link,A.comment_number b_number,
+               A.content b_content,A.type b_type,A.score b_score,A.collect b_collect,
+
+               B.id com_id,B.content com_content,B.parent_comment_id pre_com_id,B.likes com_likes,
+               B.create_time com_ct,B.user_id com_userId,
+
+               C_.tag_id tagId,
+               D.name tagName
+
+        from    t_blog A
+                    left join t_comment B on A.id = B.id
+                    left join t_blog_tag C_ on A.id = C_.blog_id
+                    left join t_tag D on C_.tag_id = D.id
+        where A.user_id=#{userId} and A.published = true and A.type = #{type}
+        order by A.score desc , A.update_time desc
+    </select>
+    <resultMap id="AllBlogById" type="icu.duanqihang.suse_it.pojo.Blog">
+        <result property="id" column="b_id"/>
+        <result property="title" column="b_title"/>
+        <result property="likes" column="b_likes"/>
+        <result property="avatar" column="b_avatar"/>
+        <result property="description" column="b_des"/>
+        <result property="published" column="b_pub"/>
+        <result property="state" column="b_state"/>
+        <result property="createTime" column="b_ct"/>
+        <result property="updateTime" column="b_ut"/>
+        <result property="link" column="b_link"/>
+        <result property="commentNumber" column="b_number"/>
+        <result property="content" column="b_content"/>
+        <result property="type" column="b_type"/>
+        <result property="score" column="b_score"/>
+        <result property="collect" column="b_collect"/>
+        <collection property="tags" ofType="icu.duanqihang.suse_it.pojo.Tag">
+            <result property="id" column="tagId"/>
+            <result property="tagName" column="tagName"/>
+        </collection>
+        <collection property="comments" ofType="icu.duanqihang.suse_it.pojo.Comment">
+            <result property="id" column="com_id"/>
+            <result property="content" column="com_content"/>
+            <result property="parentCommentId" column="pre_com_id"/>
+            <result property="likes" column="com_likes"/>
+            <result property="createTime" column="com_ct"/>
+            <result property="userId" column="com_userId"/>
+        </collection>
+    </resultMap>
+
+    <delete id="deleteUserCollect">
+        delete from t_user_blog where user_id=#{userId} and blog_id=#{blogId}
+    </delete>
+    <delete id="deleteBlogCollect">
+        delete from t_user_blog where blog_id = #{blogId}
+    </delete>
+
+    <insert id="insertUserCollect">
+        insert into t_user_blog(user_id,blog_id) VALUE(#{userId},#{blogId})
+    </insert>
+
+    <select id="getTagEntity" resultMap="tagEntity">
+        select A.id b_id,A.title b_title,A.likes b_likes,A.avatar b_avatar,A.description b_des,A.published b_pub,
+               A.state b_state, A.create_time b_ct,A.update_time b_ut,A.link b_link,A.comment_number b_number,
+               A.content b_content,A.type b_type,A.score b_score,A.collect b_collect,
+
+               C_.tag_id tagId,
+               D.name tagName,
+
+               E.id user_id,
+               E.nickname username,
+               E.avatar user_avatar
+
+        from    t_blog A
+                    left join t_blog_tag C_ on A.id = C_.blog_id
+                    left join t_tag D on C_.tag_id = D.id
+                    left join t_user E on A.user_id = E.id
+        where  A.published = true and A.type = #{type} and A.id In(
+            select blog_id from t_blog_tag where tag_id = #{tagId}
+        )
+        order by A.score desc , A.update_time desc
+    </select>
+    <resultMap id="tagEntity" type="icu.duanqihang.suse_it.pojo.Blog">
+        <result property="id" column="b_id"/>
+        <result property="title" column="b_title"/>
+        <result property="likes" column="b_likes"/>
+        <result property="avatar" column="b_avatar"/>
+        <result property="description" column="b_des"/>
+        <result property="published" column="b_pub"/>
+        <result property="state" column="b_state"/>
+        <result property="createTime" column="b_ct"/>
+        <result property="updateTime" column="b_ut"/>
+        <result property="link" column="b_link"/>
+        <result property="commentNumber" column="b_number"/>
+        <result property="content" column="b_content"/>
+        <result property="type" column="b_type"/>
+        <result property="score" column="b_score"/>
+        <result property="collect" column="b_collect"/>
+        <association property="user" javaType="icu.duanqihang.suse_it.pojo.User">
+            <result property="id" column="user_id"/>
+            <result property="nickname" column="username"/>
+            <result property="avatar" column="user_avatar"/>
+        </association>
+        <collection property="tags" ofType="icu.duanqihang.suse_it.pojo.Tag">
+            <result property="id" column="tagId"/>
+            <result property="tagName" column="tagName"/>
+        </collection>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <!--semantic and customize css-->
+    <link rel="icon" href="/img/suse.jpg">
+    <link rel="stylesheet" type="text/css" href="../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" type="text/css" href="../static/lib/Semantic-UI-CSS-master/semantic.min.css"
+          th:href="@{/lib/Semantic-UI-CSS-master/semantic.min.css}">
+</head>
+<body>
+<!--导航-->
+<nav class="ui m-padded-tb-mini m-margin-none segment">
+    <div class="ui container">
+        <div class="ui stackable secondary menu">
+            <img class="ui image item m-padded-none" src="../static/img/logo2_0.png" th:src="@{/img/logo2_0.png}" alt=""
+                 width="200px"
+                 height="65px">
+            <a href="#" class="m-item active item m-mobile-hide"><i class="small home icon m-opacity-mini"></i>首页</a>
+            <a href="" th:href="@{/resource}" class="m-item item m-mobile-hide"><i
+                    class="small boxes icon m-opacity-mini"></i>资源</a>
+            <a href="" th:href="@{/community}" class="m-item item m-mobile-hide"><i
+                    class="small users icon m-opacity-mini"></i>社区</a>
+            <a href="" th:href="@{/self}" class="m-item item m-mobile-hide"><i
+                    class="small user outline icon m-opacity-mini"></i>个人</a>
+            <div class="right m-item m-mobile-hide menu">
+                <div class="m-item right item m-mobile-hide">
+                    <form name="search_form" action="/search" method="get" target="_blank">
+                        <div class="ui transparent input">
+                            <input name="query" type="text" placeholder="Search...">
+                            <i onclick="document.forms['search_form'].submit()" class="search link icon"
+                               id="search"></i>
+                        </div>
+                    </form>
+                </div>
+                <a id="login" href="/log" th:href="@{/log}" th:if="${session.user == null}" class="item">登录</a>
+                <div class="ui dropdown item" th:if="${session.user != null}">
+                    <div class="text">
+                        <img src="https://unsplash.it/100/100?image=1005"
+                             th:src="@{${session.user.avatar}}"
+                             style="max-width: 28px;max-height: 28px"
+                             class="ui avatar image">
+                        <span th:text="${session.user.nickname}"></span>
+                    </div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a href="#" th:href="@{/log/logout}" class="item">注销</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="ui menu toggle basic icon button m-location-top-right m-mobile-show">
+        <i class="sidebar icon"></i>
+    </a>
+</nav>
+
+<!--content-->
+
+<div class="m-padded-tb-large m-container-width">
+    <div class="ui container">
+        <div class="ui success message" th:unless="${#strings.isEmpty(session.registerMessage)}">
+            <span th:text="${session.registerMessage}"></span>
+            <i class="close icon"></i>
+            <br>
+            <br>
+        </div>
+        <div class="ui stackable grid">
+            <!--left-->
+            <div class="eleven wide column" style="border: none;">
+                <!--header-->
+                <div class="ui attached segment" style="border: none;">
+                    <div class="ui middle aligned two column grid">
+                        <div class="column">
+                            <div class="ui blue header">推荐文章</div>
+                        </div>
+                        <div class="right aligned column">
+                            <a href="#" target="_blank" th:href="@{/community}">more<i class="angle double right icon"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!--content-->
+                <div class="ui  segment m-padded-none" style="border: none;">
+                    <div th:each="blog : ${bloglist.list}"
+                            class="ui vertical segment m-padded-big m-padded-tb-big-f m-mobile-lr-clear m-self-box-shadow">
+                        <div class="ui middle aligned mobile reversed stackable grid">
+                            <div class="eleven wide column">
+                                <h3
+                                        class="ui header"><a href="#" th:href="@{/blog/{id}(id=${blog.id})}"
+                                                             target="_blank"><span th:text="${blog.title}"></span></a></h3>
+                                <p class="m-text" th:text="|${blog.description}......|">
+                                    人类文明的发展要经历挫折，物质文明和汉语文明均是如此。我们还是中华民族兴旺发达的需要.</p>
+                                <div class="ui stackable grid">
+                                    <div class="row">
+                                        <div class="eleven wide column">
+                                            <div class="ui mini horizontal link list">
+                                                <div class="item">
+                                                    <img src="https://unsplash.it/800/450?image=1005"
+                                                         th:src="@{${blog.user.avatar}}"
+                                                         class="ui avatar image">
+                                                    <div class="content"><a href="#" target="_blank"
+                                                                            th:href="@{/userdetail/{id}(id=${blog.user.id})}"
+                                                                            class="header m-text-thin"
+                                                                            th:text="${blog.user.nickname}">段启航
+                                                    </a></div>
+                                                </div>
+                                                <div class="item">
+                                                    <i class="clock outline icon"></i><span
+                                                        th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd HH:mm:ss')}">2021-7
+                                                        -15</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="five wide column">
+                                <a href="#" style="width: 800px; height:450px;">
+                                    <img src="https://unsplash.it/800/450?image=1005"
+                                         th:src="@{${blog.avatar}}"
+                                         class="ui rounded image">
+                                </a>
+                            </div>
+                            <div class="row m-padded-tb-normal">
+                                <div class="eleven wide column">
+                                    <div class="ui grid">
+                                        <div class="item m-padded-tag">
+                                            <i class="tags mini icon m-opacity-mini m-padded-normal"></i>
+                                        </div>
+                                        <div th:each="tag : ${blog.tags}" class="item m-padded-tag">
+                                            <a href="#"
+                                               class="ui label m-margin-tb-tiny" th:text="${tag.tagName}">
+                                                JAVA
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="five wide column m-text-thin m-opacity-tiny">
+                                    <div class="ui grid">
+                                        <div class="m-padded-tag">
+                                            <i class="thumbs up outline icon"></i>
+                                            <span th:text="${blog.likes}==null?0:${blog.likes}">100</span>
+                                        </div>
+                                        <div class="m-padded-tag">
+                                            <i class="heart outline icon"></i>
+                                            <span th:text="${blog.collect}==null?0:${blog.collect}">100</span>
+                                        </div>
+                                        <div class="m-padded-tag">
+                                            <i class="comments outline icon"></i>
+                                            <span th:text="${blog.commentNumber}==null?0:${blog.commentNumber}">100
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <br>
+                <!--footer-->
+                <div class="ui center aligned container">
+                    <div class="ui buttons" style="opacity: 0.8">
+                        <button class="ui labeled icon button">
+                            <a class="m-a-a-color" th:href="@{/(pageNum=${bloglist.prePage})}">
+                            <i class="left chevron icon"></i>
+                            上一页
+                            </a>
+                        </button>
+                        <button class="ui button"><a class="m-a-a-color" th:href="@{/(pageNum=${bloglist.firstPage})}">
+                            first
+                        </a>
+                        </button>
+                        <button class="ui button"><a class="m-a-a-color" href="">
+                            第&nbsp;<span th:text="${bloglist.pageNum}"></span>&nbsp;页
+                        </a>
+                        </button>
+                        <button class="ui button"><a class="m-a-a-color" href="">
+                            共&nbsp;<span th:text="${bloglist.pages}"></span>&nbsp;页
+                        </a>
+                        </button>
+                        <button class="ui button"><a class="m-a-a-color" href=""
+                                                     th:href="@{/(pageNum=${bloglist.lastPage})}">
+                            last
+                        </a>
+                        </button>
+                        <button class="ui right labeled icon button">
+                            <a th:href="@{/(pageNum=${bloglist.nextPage})}" class="m-a-a-color">
+                                下一页
+                                <i class="right chevron icon"></i>
+                            </a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!--right-->
+            <div class="five wide column">
+                <!--推荐资源-->
+                <div class="ui segment m-border-none">
+                    <div class="ui middle aligned two column grid">
+                        <div class="column">
+                            <div class="ui blue small header">推荐资源</div>
+                        </div>
+                        <div class="right aligned column">
+                            <a href="#" target="_blank" th:href="@{/resource}">more<i class="angle double right icon"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui segments m-border-none">
+                    <div th:each="resource : ${resourcelist}" class="ui  segment">
+                        <a href="#" target="_blank" th:href="@{/resource/{id}(id=${resource.id})}"
+                           class="m-text-thin m-a-a-color">
+                            <h4 th:text="${resource.title}">资源标题</h4>
+                            <div class="ui mini detail grid">
+                                <div class="eight wide column">
+                                    <i class="calendar icon"></i>
+                                    <span th:text="${#dates.format(resource.updateTime,'yyyy-MM-dd')}">2021
+                                        -07-15</span>
+                                </div>
+                                <div class="eight wide column right aligned">
+                                    <i class="heart m-color-yinhong icon"></i>
+                                    <span th:text="${resource.likes}">5</span>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i class="star m-color-jianghuang icon"></i>
+                                    <span th:text="${resource.score}">4.5</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <!--<div class="ui  segment">
+                        <a href="#" target="_blank" class="m-text-thin m-a-a-color">
+                            <h4>资源标题</h4>
+                            <div class="ui mini detail grid">
+                                <div class="eight wide column">
+                                    <i class="calendar icon"></i>
+                                    <span>2021 -07-15</span>
+                                </div>
+                                <div class="eight wide column right aligned">
+                                    <i class="heart m-color-yinhong icon"></i>
+                                    <span>5</span>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i class="star m-color-jianghuang icon"></i>
+                                    <span>4.4</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="ui  segment">
+                        <a href="#" target="_blank" class="m-text-thin m-a-a-color">
+                            <h4>资源标题</h4>
+                            <div class="ui mini detail grid">
+                                <div class="eight wide column">
+                                    <i class="calendar icon"></i>
+                                    <span>2021 -07-15</span>
+                                </div>
+                                <div class="eight wide column right aligned">
+                                    <i class="heart m-color-yinhong icon"></i>
+                                    <span>5</span>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i class="star m-color-jianghuang icon"></i>
+                                    <span>4.3</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="ui  segment">
+                        <a href="#" target="_blank" class="m-text-thin m-a-a-color">
+                            <h4>资源标题</h4>
+                            <div class="ui mini detail grid">
+                                <div class="eight wide column">
+                                    <i class="calendar icon"></i>
+                                    <span>2021 -07-15</span>
+                                </div>
+                                <div class="eight wide column right aligned">
+                                    <i class="heart m-color-yinhong icon"></i>
+                                    <span>5</span>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i class="star m-color-jianghuang icon"></i>
+                                    <span>4.2</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="ui  segment">
+                        <a href="#" target="_blank" class="m-text-thin m-a-a-color">
+                            <h4>资源标题</h4>
+                            <div class="ui mini detail grid">
+                                <div class="eight wide column">
+                                    <i class="calendar icon"></i>
+                                    <span>2021 -07-15</span>
+                                </div>
+                                <div class="eight wide column right aligned">
+                                    <i class="heart m-color-yinhong icon"></i>
+                                    <span>5</span>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i class="star m-color-jianghuang icon"></i>
+                                    <span>4.1</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>-->
+                </div>
+
+                <!--最新公告-->
+                <div class="ui segments m-margin-top-large">
+                    <div class="ui secondary segment">
+                        <i class="bookmark icon"></i>最新公告
+                    </div>
+                    <div class="ui m-padded-normal segment">
+                        <a href="https://jsj.suse.edu.cn/p/0/?StId=st_app_news_i_x637609071350900081" class="m-text-thin m-a-a-color">
+                            <div class="ui grid">
+                                <div class="eight wide column m-padded-normal">
+                                    <img src="../static/img/acm.png" th:src="@{/img/acm.png}" alt="" width="100%"
+                                         height="auto">
+                                </div>
+                                <div class="eight wide column middle aligned" style="overflow: hidden">
+                                    <p>ACM院集训队招新了</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="ui m-padded-normal segment">
+                        <a href="https://jsj.suse.edu.cn/p/0/?StId=st_app_news_i_x637609071350900081" class="m-text-thin m-a-a-color">
+                            <div class="ui grid">
+                                <div class="eight wide column m-padded-normal">
+                                    <img src="../static/img/acm.png" th:src="@{/img/acm.png}" alt="" width="100%"
+                                         height="auto">
+                                </div>
+                                <div class="eight wide column middle aligned" style="overflow: hidden">
+                                    <p>ACM院集训队招新了</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!--广告-->
+                <div class="ui message segment m-margin-top-large"
+                     style="height: 300px;background-image: url(/img/wallhaven-7623ky.jpg);background-size: cover">
+                    <i class="close grey icon"></i>
+                    <div class="ui menu m-border-none m-margin-none-all" style="background: none;box-shadow: none;">
+                        <div class="ui label basic white left aligned m-border-none" style="background: none;">广告</div>
+                    </div>
+                    <div style="width: 100%;height:85%"></div>
+                </div>
+
+                <!--卡片-->
+                <div class="ui mini horizontal divider header m-text-thin m-text-style">还没想好</div>
+                <div class="ui centered card" style="width: 15em">
+                    <img src="../static/img/84ff537219334729a11406a78b169ba2.jpg" th:src="@{/img/84ff537219334729a11406a78b169ba2.jpg}" class="ui rounded image">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--foot-->
+<div class="ui section divider"></div>
+<footer th:replace="fragment_::footer" class="ui vertical segment m-padded-tb-large">
+    <div class="ui center aligned container">
+        <div class="ui divided stackable grid">
+            <div class="three wide column center aligned">
+                <div class="ui link list">
+                    <div class="item">
+                        <img src="../static/img/logo2_0.png" th:src="@{/img/logo2_0.png}" class="ui rounded image"
+                             style="width:
+                            110px;">
+                    </div>
+                </div>
+            </div>
+            <div class="three wide column">
+                <h4 class="ui header m-text-spaced m-text-lined">创意Blog</h4>
+                <div class="ui link list">
+                    <a href="#" class="item">orange</a>
+                    <a href="#" class="item">orange</a>
+                    <a href="#" class="item">orange</a>
+                </div>
+            </div>
+            <div class="six wide column">
+                <h4 class="ui header m-text-spaced m-text-lined">官方</h4>
+                <div class="ui link list">
+                    <a href="#" class="item">四川轻化工大学</a>
+                    <a href="#" class="item">计算机科学与工程学院</a>
+                    <a href="#" class="item">四川轻化工大学电子图书馆</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui header m-text-spaced m-text-lined">站在巨人的肩膀上</h4>
+                <p class="m-text-spaced m-text-lined m-text-thin">技术改变世界，代码充实人生</p>
+            </div>
+        </div>
+        <div class="ui section divider"></div>
+        <p class="m-text-spaced m-text-lined m-text-thin m-opacity-tiny">蜀ICP备2021025306号-1</p>
+        <p class="m-text-spaced m-text-lined m-text-thin m-opacity-tiny">CopyRight © 2021-10 DuanQiHang Class 9 of
+            Computer Science and Technology,SUSE</p>
+    </div>
+</footer>
+
+
+<!--semantic and jquery js-->
+<script src="../static/js/jquery-3.2.1.js" th:src="@{/js/jquery-3.2.1.js}"></script>
+<script src="../static/lib/Semantic-UI-CSS-master/semantic.min.js" th:src="@{/lib/Semantic-UI-CSS-master/semantic.min.js}"></script>
+<script>
+
+    //移动端适配
+    $('.menu.toggle').click(function () {
+        $('.m-item').toggleClass('m-mobile-hide');
+    });
+    /*message关闭*/
+    $('.message .close')
+        .on('click', function() {
+            $(this)
+                .closest('.message')
+                .transition('fade')
+            ;
+            $.ajax({
+                url: '/clearRegisterMessage',
+                type: 'GET',
+                data:{},
+                dataType: 'text',
+                success: function(){}
+            })
+        })
+    ;
+    $('.ui.dropdown').dropdown({
+        transition: 'drop'
+    });
+    function submit_form() {
+        /*alert("submit_form")*/
+        $('#search_form').submit();
+    }
+</script>
+</body>
+</html>

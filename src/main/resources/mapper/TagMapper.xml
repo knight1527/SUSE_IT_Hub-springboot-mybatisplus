@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="icu.duanqihang.suse_it.mapper.TagMapper">
+    <insert id="insertUser_Tag">
+        insert into t_user_tag(user_id, tag_id) VALUE (#{userId},#{tagId})
+    </insert>
+    <insert id="insertBlog_Tag">
+        insert into t_blog_tag(blog_id,tag_id) value (#{blogId},#{tagId})
+    </insert>
+
+
+    <delete id="deleteUserTags">
+        delete from t_user_tag where user_id = #{userId}
+    </delete>
+    <delete id="deleteBlogTags">
+        delete from t_blog_tag where blog_id = #{blogId}
+    </delete>
+
+    <select id="getDefaultTag" resultType="icu.duanqihang.suse_it.pojo.Blog" resultMap="Ttag">
+        select a.tag_id tagId,b.name TagName
+        from t_blog_tag As a, t_tag As b
+        where a.tag_id = b.id;
+    </select>
+    <resultMap id="Ttag" type="icu.duanqihang.suse_it.pojo.Tag">
+        <result property="tagName" column="TagName"/>
+        <result property="id" column="TagId"/>
+    </resultMap>
+
+    <select id="getTags" resultType="icu.duanqihang.suse_it.pojo.Tag">
+        select B.id id,B.name tagName,B.type_id typeId
+        from t_blog_tag A,suse.t_tag B
+        where A.blog_id=#{blogId} and A.tag_id=B.id
+    </select>
+    <select id="getBlogCount" resultType="java.lang.Integer">
+        select distinct count(*)
+        from t_blog_tag A,suse.t_blog B
+        where A.tag_id=#{tagId} and A.blog_id=B.id and B.published=true and B.type=true;
+    </select>
+    <select id="getResourceCount" resultType="java.lang.Integer">
+        select distinct count(*)
+        from t_blog_tag A,suse.t_blog B
+        where A.tag_id=#{reId} and A.blog_id=B.id and B.published=true and B.type=false;
+    </select>
+    <select id="getTagEntityIds" resultType="java.lang.Long">
+        select blog_id from t_blog_tag where tag_id=#{tagId}
+    </select>
+
+</mapper>
