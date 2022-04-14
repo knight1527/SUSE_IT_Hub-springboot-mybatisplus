@@ -18,8 +18,10 @@ target/
 *.iws
 *.iml
 *.ipr
-
+*.cmd
+*.gitignore
 ### NetBeans ###
+/log/
 /nbproject/private/
 /nbbuild/
 /dist/
